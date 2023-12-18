@@ -7,7 +7,8 @@
 
 AsyncWebServer server(80);
 
-const char *PARAM_MESSAGE = "message";
+const char *PARAM_PWM = "pwm";
+const char *PARAM_MODE = "mode";
 
 void initWiFi()
 {
@@ -22,31 +23,56 @@ void initWiFi()
     Serial.println(WiFi.localIP());
 }
 
+void debugRequest(AsyncWebServerRequest *request)
+{
+    int args = request->args();
+    Serial.println();
+    Serial.println(request->url());
+    for (int i = 0; i < args; i++)
+    {
+        Serial.printf("ARG[%s]: %s\n", request->argName(i).c_str(), request->arg(i).c_str());
+    }
+}
+
 void setup()
 {
     SPIFFS.begin();
-
     Serial.begin(9600);
     initWiFi();
 
-    server.serveStatic("/index.html", SPIFFS, "/index.html");
+    server.serveStatic("/index", SPIFFS, "/index.html");
 
-    server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
+    server.on("/set-pwm-allpwm", HTTP_GET, [](AsyncWebServerRequest *request)
               {
-    Serial.println("/");
-    request->send(200, "text/plain", "Hello, world"); });
+        String pwm;
+        String mode;
+        debugRequest(request);
+        if (request->hasParam(PARAM_PWM)) {
+            pwm = request->getParam(PARAM_PWM)->value();
+        } 
+        if (request->hasParam(PARAM_MODE)) {
+            mode = request->getParam(PARAM_MODE)->value();
+        } 
+        
+       Serial.println("pwm="+pwm);
+       Serial.println("mode="+mode);
+       request->send(200); });
 
-    // Send a GET request to <IP>/get?message=<message>
-    server.on("/get", HTTP_GET, [](AsyncWebServerRequest *request)
+    server.on("/set-pwm-motor", HTTP_GET, [](AsyncWebServerRequest *request)
               {
-        String message;
-        if (request->hasParam(PARAM_MESSAGE)) {
-            message = request->getParam(PARAM_MESSAGE)->value();
-        } else {
-            message = "No message sent";
-        }
-        Serial.println("/get");
-        request->send(200, "text/plain", "Hello, GET: " + message); });
+        String pwm;
+        String mode;
+        debugRequest(request);
+        if (request->hasParam(PARAM_PWM)) {
+            pwm = request->getParam(PARAM_PWM)->value();
+        } 
+        if (request->hasParam(PARAM_MODE)) {
+            mode = request->getParam(PARAM_MODE)->value();
+        } 
+        
+       Serial.println("pwm="+pwm);
+       Serial.println("mode="+mode);
+       request->send(200); });
 
     server.begin();
 }
