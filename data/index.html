@@ -3,7 +3,9 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="data:,">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="/index.js"></script>
     <title>Workbench Lift</title>
 </head>
 
@@ -17,59 +19,32 @@
     </div>
     <div>
         All
-        <input type="range" min="1" max="1024" value="50" class="slider" id="allpwm"
-            onchange="updateSliderPWM(this, 'allpwm')">
+        <input type="range" min="1" max="1024" value="50" class="slider" id="allpwm" onchange="updateSliderPWM(this)">
         <span id="text_allpwm">50</span>
     </div>
     <div>
         1
-        <input type="range" min="1" max="1024" value="50" class="slider" id="motor1"
-            onchange="updateSliderPWM(this, 'motor1')">
+        <input type="range" min="1" max="1024" value="50" class="slider" id="motor1" onchange="updateSliderPWM(this)">
         <span id="text_motor1">50</span>
     </div>
     <div>
         2
-        <input type="range" min="1" max="1024" value="50" class="slider" id="motor2"
-            onchange="updateSliderPWM(this, 'motor2')">
+        <input type="range" min="1" max="1024" value="50" class="slider" id="motor2" onchange="updateSliderPWM(this)">
         <span id="text_motor2">50</span>
     </div>
     <div>
         3
-        <input type="range" min="1" max="1024" value="50" class="slider" id="motor3"
-            onchange="updateSliderPWM(this, 'motor3')">
+        <input type="range" min="1" max="1024" value="50" class="slider" id="motor3" onchange="updateSliderPWM(this)">
         <span id="text_motor3">50</span>
     </div>
     <div>
         4
-        <input type="range" min="1" max="1024" value="50" class="slider" id="motor4"
-            onchange="updateSliderPWM(this, 'motor4')">
+        <input type="range" min="1" max="1024" value="50" class="slider" id="motor4" onchange="updateSliderPWM(this)">
         <span id="text_motor4">50</span>
     </div>
     <div>
         <button onclick="resetFunction()">Reset</button>
     </div>
-
-    <script>
-        function updateSliderPWM(element, elementId) {
-            var sliderValue = document.getElementById(elementId).value;
-            document.getElementById("text_" + elementId).innerHTML = sliderValue;
-            var mode = document.getElementById("mode").value;
-            console.log("elementId=" + elementId)
-            console.log("sliderValue=" + sliderValue);
-            console.log("mode=" + mode);
-            var xhr = new XMLHttpRequest();
-            xhr.open("GET", "/set-pwm-" + elementId + "?pwm=" + sliderValue + "&mode=" + mode, true);
-            xhr.send();
-        }
-        function resetFunction() {
-            document.getElementById("allpwm").value = 50;
-            document.getElementById("text_allpwm").innerHTML = 50;
-            for (var i = 1; i <= 4; i++) {
-                document.getElementById("motor" + i).value = 50;
-                document.getElementById("text_motor" + i).innerHTML = 50;
-            }
-        }
-    </script>
 
 </body>
 

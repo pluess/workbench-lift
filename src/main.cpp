@@ -2,13 +2,15 @@
 #include <WiFi.h>
 #include <SPIFFS.h>
 #include <AsyncTCP.h>
-#include "credentials.h"
 #include <ESPAsyncWebServer.h>
+#include "credentials.h"
+#include "motorhandler.h"
 
 AsyncWebServer server(80);
 
 const char *PARAM_PWM = "pwm";
 const char *PARAM_MODE = "mode";
+const char *PARAM_MOTOR = "motor";
 
 void initWiFi()
 {
@@ -41,11 +43,13 @@ void setup()
     initWiFi();
 
     server.serveStatic("/index", SPIFFS, "/index.html");
+    server.serveStatic("/index.js", SPIFFS, "/index.js");
 
-    server.on("/set-pwm-allpwm", HTTP_GET, [](AsyncWebServerRequest *request)
+    server.on("/setpwm", HTTP_GET, [](AsyncWebServerRequest *request)
               {
         String pwm;
         String mode;
+        String motor;
         debugRequest(request);
         if (request->hasParam(PARAM_PWM)) {
             pwm = request->getParam(PARAM_PWM)->value();
@@ -53,25 +57,13 @@ void setup()
         if (request->hasParam(PARAM_MODE)) {
             mode = request->getParam(PARAM_MODE)->value();
         } 
-        
-       Serial.println("pwm="+pwm);
-       Serial.println("mode="+mode);
-       request->send(200); });
-
-    server.on("/set-pwm-motor", HTTP_GET, [](AsyncWebServerRequest *request)
-              {
-        String pwm;
-        String mode;
-        debugRequest(request);
-        if (request->hasParam(PARAM_PWM)) {
-            pwm = request->getParam(PARAM_PWM)->value();
-        } 
-        if (request->hasParam(PARAM_MODE)) {
-            mode = request->getParam(PARAM_MODE)->value();
+        if (request->hasParam(PARAM_MOTOR)) {
+            motor = request->getParam(PARAM_MOTOR)->value();
         } 
         
        Serial.println("pwm="+pwm);
        Serial.println("mode="+mode);
+       Serial.println("mode="+motor);
        request->send(200); });
 
     server.begin();
