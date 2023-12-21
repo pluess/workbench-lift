@@ -3,6 +3,7 @@
 #include <SPIFFS.h>
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
+#include <DebugLog.h>
 #include "credentials.h"
 #include "motorhandler.h"
 
@@ -28,11 +29,10 @@ void initWiFi()
 void debugRequest(AsyncWebServerRequest *request)
 {
     int args = request->args();
-    Serial.println();
-    Serial.println(request->url());
+    LOG_DEBUG("URL=", request->url());
     for (int i = 0; i < args; i++)
     {
-        Serial.printf("ARG[%s]: %s\n", request->argName(i).c_str(), request->arg(i).c_str());
+        LOG_DEBUG("ARG ", request->argName(i).c_str(), "=", request->arg(i).c_str());
     }
 }
 
@@ -60,10 +60,8 @@ void setup()
         if (request->hasParam(PARAM_MOTOR)) {
             motor = request->getParam(PARAM_MOTOR)->value();
         } 
-        
-       Serial.println("pwm="+pwm);
-       Serial.println("mode="+mode);
-       Serial.println("mode="+motor);
+        LOG_INFO("pwm=", pwm, ", mode=", mode, ", motor=", motor);
+
        request->send(200); });
 
     server.on("/motor", HTTP_GET, [](AsyncWebServerRequest *request)
@@ -77,9 +75,8 @@ void setup()
         if (request->hasParam(PARAM_MOTOR)) {
             motor = request->getParam(PARAM_MOTOR)->value();
         } 
-        
-       Serial.println("mode="+mode);
-       Serial.println("mode="+motor);
+        LOG_INFO("mode=", mode, ", motor=", motor);
+
        request->send(200); });
 
     server.begin();

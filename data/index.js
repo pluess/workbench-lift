@@ -1,7 +1,7 @@
 function updateAllSlider() {
     var sliderValue = $("#allpwm").val();
     $("text_allpwm").html(sliderValue);
-    console.log("sliderValue=" + sliderValue);
+    console.log(`updateAllSlider: sliderValue=${sliderValue}`);
     for (var i = 1; i <= 4; i++) {
         $("#motor" + i).val(sliderValue).trigger("change");
     }
@@ -11,9 +11,7 @@ function updateSliderPWM(element) {
     var sliderValue = $(element).val();
     $("#text_" + element.id).html(sliderValue);
     var mode = $("#mode").val();
-    console.log("element.id=" + element.id)
-    console.log("sliderValue=" + sliderValue);
-    console.log("mode=" + mode);
+    console.log(`updateSliderPWM: element.id=${element.id}, sliderValue=${sliderValue}, mode=${mode}`);
     $.ajax(
         {
             url: "/setpwm",
@@ -53,10 +51,9 @@ function unsetAllMotor() {
 
 function switchMotor(event) {
     var mode = $(this).val();
-    console.log("mode=" + mode);
     var radioName = $(this).attr("name");
     var motor = radioName.substring(5, 6);
-    console.log("motor=" + motor);
+    console.log(`switchMotor: mode=${mode}, motor=${motor}`);
     unsetAllMotor();
     $.ajax(
         {
