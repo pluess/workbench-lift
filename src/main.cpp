@@ -66,6 +66,22 @@ void setup()
        Serial.println("mode="+motor);
        request->send(200); });
 
+    server.on("/motor", HTTP_GET, [](AsyncWebServerRequest *request)
+              {
+        String mode;
+        String motor;
+        debugRequest(request);
+        if (request->hasParam(PARAM_MODE)) {
+            mode = request->getParam(PARAM_MODE)->value();
+        } 
+        if (request->hasParam(PARAM_MOTOR)) {
+            motor = request->getParam(PARAM_MOTOR)->value();
+        } 
+        
+       Serial.println("mode="+mode);
+       Serial.println("mode="+motor);
+       request->send(200); });
+
     server.begin();
 }
 

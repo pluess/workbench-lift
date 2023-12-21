@@ -12,25 +12,52 @@
 <body>
     <div>
         All
-        <input type="radio" id="bwAll" name="driveAll" value="bwAll">
+        <input type="radio" id="bwAll" name="motorAll" value="bw">
         <label for="bwAll">BW</label>
-        <input type="radio" id="offAll" name="driveAll" value="offAll">
+        <input type="radio" id="offAll" name="motorAll" value="off">
         <label for="offAll">OFF</label>
-        <input type="radio" id="fwAll" name="driveAll" value="fwAll">
+        <input type="radio" id="fwAll" name="motorAll" value="fw">
         <label for="fwAll">FW</label>
     </div>
     <div>
         1
-        <input type="radio" id="bw1" name="drive1" value="bw1">
+        <input type="radio" id="bw1" name="motor1" value="bw">
         <label for="bw1">BW</label>
-        <input type="radio" id="off1" name="drive1" value="off1">
+        <input type="radio" id="off1" name="motor1" value="off">
         <label for="off1">OFF</label>
-        <input type="radio" id="fw1" name="drive1" value="fw1">
+        <input type="radio" id="fw1" name="motor1" value="fw">
         <label for="fw1">FW</label>
     </div>
     <div>
+        2
+        <input type="radio" id="bw2" name="motor2" value="bw">
+        <label for="bw1">BW</label>
+        <input type="radio" id="off2" name="motor2" value="off">
+        <label for="off2">OFF</label>
+        <input type="radio" id="fw2" name="motor2" value="fw">
+        <label for="fw2">FW</label>
+    </div>
+    <div>
+        3
+        <input type="radio" id="bw3" name="motor3" value="bw">
+        <label for="bw1">BW</label>
+        <input type="radio" id="off3" name="motor3" value="off">
+        <label for="off3">OFF</label>
+        <input type="radio" id="fw3" name="motor3" value="fw">
+        <label for="fw3">FW</label>
+    </div>
+    <div>
+        4
+        <input type="radio" id="bw4" name="motor4" value="bw">
+        <label for="bw1">BW</label>
+        <input type="radio" id="off4" name="motor4" value="off">
+        <label for="off4">OFF</label>
+        <input type="radio" id="fw4" name="motor4" value="fw">
+        <label for="fw4">FW</label>
+    </div>
+    <div>
         All
-        <input type="range" min="1" max="1024" value="50" class="slider" id="allpwm" onchange="updateAll()">
+        <input type="range" min="1" max="1024" value="50" class="slider" id="allpwm" onchange="updateAllSlider()">
         <span id="text_allpwm">50</span>
     </div>
     <div>
