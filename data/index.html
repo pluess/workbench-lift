@@ -11,15 +11,26 @@
 
 <body>
     <div>
-        Motor:
-        <select id="mode">
-            <option valu="all">all</option>
-            <option valu="individual">individual</option>
-        </select>
+        All
+        <input type="radio" id="bwAll" name="driveAll" value="bwAll">
+        <label for="bwAll">BW</label>
+        <input type="radio" id="offAll" name="driveAll" value="offAll">
+        <label for="offAll">OFF</label>
+        <input type="radio" id="fwAll" name="driveAll" value="fwAll">
+        <label for="fwAll">FW</label>
+    </div>
+    <div>
+        1
+        <input type="radio" id="bw1" name="drive1" value="bw1">
+        <label for="bw1">BW</label>
+        <input type="radio" id="off1" name="drive1" value="off1">
+        <label for="off1">OFF</label>
+        <input type="radio" id="fw1" name="drive1" value="fw1">
+        <label for="fw1">FW</label>
     </div>
     <div>
         All
-        <input type="range" min="1" max="1024" value="50" class="slider" id="allpwm" onchange="updateSliderPWM(this)">
+        <input type="range" min="1" max="1024" value="50" class="slider" id="allpwm" onchange="updateAll()">
         <span id="text_allpwm">50</span>
     </div>
     <div>
