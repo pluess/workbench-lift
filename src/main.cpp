@@ -10,7 +10,7 @@
 AsyncWebServer server(80);
 
 const char *PARAM_PWM = "pwm";
-const char *PARAM_MODE = "mode";
+const char *PARAM_DIRECTION = "direction";
 const char *PARAM_MOTOR = "motor";
 
 void initWiFi()
@@ -54,9 +54,6 @@ void setup()
         if (request->hasParam(PARAM_PWM)) {
             pwm = request->getParam(PARAM_PWM)->value();
         } 
-        if (request->hasParam(PARAM_MODE)) {
-            mode = request->getParam(PARAM_MODE)->value();
-        } 
         if (request->hasParam(PARAM_MOTOR)) {
             motor = request->getParam(PARAM_MOTOR)->value();
         } 
@@ -66,16 +63,16 @@ void setup()
 
     server.on("/motor", HTTP_GET, [](AsyncWebServerRequest *request)
               {
-        String mode;
+        String direction;
         String motor;
         debugRequest(request);
-        if (request->hasParam(PARAM_MODE)) {
-            mode = request->getParam(PARAM_MODE)->value();
+        if (request->hasParam(PARAM_DIRECTION)) {
+            direction = request->getParam(PARAM_DIRECTION)->value();
         } 
         if (request->hasParam(PARAM_MOTOR)) {
             motor = request->getParam(PARAM_MOTOR)->value();
         } 
-        LOG_INFO("mode=", mode, ", motor=", motor);
+        LOG_INFO("direction=", direction, ", motor=", motor);
 
        request->send(200); });
 

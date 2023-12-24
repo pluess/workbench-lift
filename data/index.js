@@ -10,15 +10,13 @@ function updateAllSlider() {
 function updateSliderPWM(element) {
     var sliderValue = $(element).val();
     $("#text_" + element.id).html(sliderValue);
-    var mode = $("#mode").val();
-    console.log(`updateSliderPWM: element.id=${element.id}, sliderValue=${sliderValue}, mode=${mode}`);
+    console.log(`updateSliderPWM: element.id=${element.id}, sliderValue=${sliderValue}`);
     $.ajax(
         {
             url: "/setpwm",
             data: {
                 motor: element.id,
                 pwm: sliderValue,
-                mode: mode
             },
             type: "GET"
         }
@@ -50,17 +48,17 @@ function unsetAllMotor() {
 }
 
 function switchMotor(event) {
-    var mode = $(this).val();
+    var direction = $(this).val();
     var radioName = $(this).attr("name");
     var motor = radioName.substring(5, 6);
-    console.log(`switchMotor: mode=${mode}, motor=${motor}`);
+    console.log(`switchMotor: direction=${direction}, motor=${motor}`);
     unsetAllMotor();
     $.ajax(
         {
             url: "/motor",
             data: {
                 motor: motor,
-                mode: mode
+                direction: direction
             },
             type: "GET"
         }
