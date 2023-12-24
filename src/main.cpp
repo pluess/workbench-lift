@@ -5,13 +5,23 @@
 #include <ESPAsyncWebServer.h>
 #include <DebugLog.h>
 #include "credentials.h"
-#include "motorhandler.h"
+#include "motor.h"
 
 AsyncWebServer server(80);
 
 const char *PARAM_PWM = "pwm";
 const char *PARAM_DIRECTION = "direction";
 const char *PARAM_MOTOR = "motor";
+
+const int FREQUENCY = 5000;
+const int BIT_RESOLUTION = 10;
+
+const int DEFAULT_PWM = 0;
+
+const int MOTOR1_BW_PIN = 15;
+const int MOTOR1_FW_PIN = 2;
+const int MOTOR2_BW_PIN = 0;
+const int MOTOR2_FW_PIN = 4;
 
 void initWiFi()
 {
@@ -44,6 +54,22 @@ void setup()
 
     server.serveStatic("/index", SPIFFS, "/index.html");
     server.serveStatic("/index.js", SPIFFS, "/index.js");
+
+    pinMode(MOTOR1_BW_PIN, OUTPUT);
+    pinMode(MOTOR1_FW_PIN, OUTPUT);
+    ledcSetup(0, FREQUENCY, BIT_RESOLUTION);
+    ledcAttachPin(MOTOR1_BW_PIN, 0);
+    ledcSetup(1, FREQUENCY, BIT_RESOLUTION);
+    ledcAttachPin(MOTOR1_FW_PIN, 1);
+    Motor motor1(1, 0, 1, DEFAULT_PWM);
+
+    pinMode(MOTOR2_BW_PIN, OUTPUT);
+    pinMode(MOTOR2_FW_PIN, OUTPUT);
+    ledcSetup(2, FREQUENCY, BIT_RESOLUTION);
+    ledcAttachPin(MOTOR2_BW_PIN, 2);
+    ledcSetup(3, FREQUENCY, BIT_RESOLUTION);
+    ledcAttachPin(MOTOR2_FW_PIN, 3);
+    Motor motor2(2, 2, 3, DEFAULT_PWM);
 
     server.on("/setpwm", HTTP_GET, [](AsyncWebServerRequest *request)
               {
