@@ -1,3 +1,5 @@
+#include <Arduino.h>
+
 #ifndef MOTOR_H
 #define MOTOR_H
 
@@ -11,16 +13,17 @@ enum class Direction
 class Motor
 {
 public:
-    Motor(int motor,
+    Motor(int motorNr,
           int bwPwmChannel,
           int fwPwmChannel,
-          int defaultPwm) : motor_(motor),
+          int defaultPwm) : motorNr_(motorNr),
                             bwPwmChannel_(bwPwmChannel),
                             fwPwmChannel_(fwPwmChannel),
                             defaultPwm_(defaultPwm),
-                            currentPwm_(defaultPwm) {}
+                            currentPwm_(defaultPwm),
+                            currentDirection_(Direction::Off) {}
 
-    int const motor() const { return motor_; }
+    int const motorNr() const { return motorNr_; }
 
     int defaultPwm() const { return defaultPwm_; }
 
@@ -28,7 +31,7 @@ public:
     void setCurrentPwm(int currentPwm)
     {
         currentPwm_ = currentPwm;
-        setPwm();
+        drive();
     }
 
     void resetPwn() { currentPwm_ = defaultPwm_; }
@@ -36,18 +39,23 @@ public:
     void setDirection(const Direction direction)
     {
         currentDirection_ = direction;
-        setPwm();
+        drive();
     }
 
+    String toString();
+
+    static String directionToString(Direction direction);
+    static Direction stringToDirection(String s);
+
 private:
-    int motor_;
+    int motorNr_;
     int defaultPwm_;
     int currentPwm_;
     int bwPwmChannel_;
     int fwPwmChannel_;
     Direction currentDirection_;
 
-    void setPwm();
+    void drive();
 };
 
 #endif

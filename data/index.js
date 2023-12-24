@@ -10,12 +10,13 @@ function updateAllSlider() {
 function updateSliderPWM(element) {
     var sliderValue = $(element).val();
     $("#text_" + element.id).html(sliderValue);
-    console.log(`updateSliderPWM: element.id=${element.id}, sliderValue=${sliderValue}`);
+    var motor = parseInt(element.id.substring(5, 6));
+    console.log(`updateSliderPWM: motor=${motor}, sliderValue=${sliderValue}`);
     $.ajax(
         {
             url: "/setpwm",
             data: {
-                motor: element.id,
+                motor: motor,
                 pwm: sliderValue,
             },
             type: "GET"
@@ -24,7 +25,7 @@ function updateSliderPWM(element) {
 }
 
 function resetFunction() {
-    $("#allpwm").val(50).trigger("change");
+    $("#allpwm").val(0).trigger("change");
     $("#offAll").prop("checked", true).change();
 }
 

@@ -12,73 +12,73 @@
 <body>
     <div>
         All
-        <input type="radio" id="bwAll" name="motorAll" value="bw">
-        <label for="bwAll">BW</label>
-        <input type="radio" id="offAll" name="motorAll" value="off">
+        <input type="radio" id="bwAll" name="motorAll" value="Backward">
+        <label for="bwAll">Backward</label>
+        <input type="radio" id="offAll" name="motorAll" value="Off">
         <label for="offAll">OFF</label>
-        <input type="radio" id="fwAll" name="motorAll" value="fw">
-        <label for="fwAll">FW</label>
+        <input type="radio" id="fwAll" name="motorAll" value="Forward">
+        <label for="fwAll">Forward</label>
     </div>
     <div>
         1
-        <input type="radio" id="bw1" name="motor1" value="bw">
-        <label for="bw1">BW</label>
-        <input type="radio" id="off1" name="motor1" value="off">
+        <input type="radio" id="bw1" name="motor1" value="Backward">
+        <label for="bw1">Backward</label>
+        <input type="radio" id="off1" name="motor1" value="Off">
         <label for="off1">OFF</label>
-        <input type="radio" id="fw1" name="motor1" value="fw">
-        <label for="fw1">FW</label>
+        <input type="radio" id="fw1" name="motor1" value="Forward">
+        <label for="fw1">Forward</label>
     </div>
     <div>
         2
-        <input type="radio" id="bw2" name="motor2" value="bw">
-        <label for="bw1">BW</label>
-        <input type="radio" id="off2" name="motor2" value="off">
+        <input type="radio" id="bw2" name="motor2" value="Backward">
+        <label for="bw1">Backward</label>
+        <input type="radio" id="off2" name="motor2" value="Off">
         <label for="off2">OFF</label>
-        <input type="radio" id="fw2" name="motor2" value="fw">
-        <label for="fw2">FW</label>
+        <input type="radio" id="fw2" name="motor2" value="Forward">
+        <label for="fw2">Forward</label>
     </div>
     <div>
         3
-        <input type="radio" id="bw3" name="motor3" value="bw">
-        <label for="bw1">BW</label>
-        <input type="radio" id="off3" name="motor3" value="off">
+        <input type="radio" id="bw3" name="motor3" value="Backward">
+        <label for="bw1">Backward</label>
+        <input type="radio" id="off3" name="motor3" value="Off">
         <label for="off3">OFF</label>
-        <input type="radio" id="fw3" name="motor3" value="fw">
-        <label for="fw3">FW</label>
+        <input type="radio" id="fw3" name="motor3" value="Forward">
+        <label for="fw3">Forward</label>
     </div>
     <div>
         4
-        <input type="radio" id="bw4" name="motor4" value="bw">
-        <label for="bw1">BW</label>
-        <input type="radio" id="off4" name="motor4" value="off">
+        <input type="radio" id="bw4" name="motor4" value="Backward">
+        <label for="bw1">Backward</label>
+        <input type="radio" id="off4" name="motor4" value="Off">
         <label for="off4">OFF</label>
-        <input type="radio" id="fw4" name="motor4" value="fw">
-        <label for="fw4">FW</label>
+        <input type="radio" id="fw4" name="motor4" value="Forward">
+        <label for="fw4">Forward</label>
     </div>
     <div>
         All
-        <input type="range" min="1" max="1024" value="50" class="slider" id="allpwm" onchange="updateAllSlider()">
-        <span id="text_allpwm">50</span>
+        <input type="range" min="1" max="1024" value="0" class="slider" id="allpwm" onchange="updateAllSlider()">
+        <span id="text_allpwm">0</span>
     </div>
     <div>
         1
-        <input type="range" min="1" max="1024" value="50" class="slider" id="motor1" onchange="updateSliderPWM(this)">
-        <span id="text_motor1">50</span>
+        <input type="range" min="1" max="1024" value="0" class="slider" id="motor1" onchange="updateSliderPWM(this)">
+        <span id="text_motor1">0</span>
     </div>
     <div>
         2
-        <input type="range" min="1" max="1024" value="50" class="slider" id="motor2" onchange="updateSliderPWM(this)">
-        <span id="text_motor2">50</span>
+        <input type="range" min="1" max="1024" value="0" class="slider" id="motor2" onchange="updateSliderPWM(this)">
+        <span id="text_motor2">0</span>
     </div>
     <div>
         3
-        <input type="range" min="1" max="1024" value="50" class="slider" id="motor3" onchange="updateSliderPWM(this)">
-        <span id="text_motor3">50</span>
+        <input type="range" min="1" max="1024" value="0" class="slider" id="motor3" onchange="updateSliderPWM(this)">
+        <span id="text_motor3">0</span>
     </div>
     <div>
         4
-        <input type="range" min="1" max="1024" value="50" class="slider" id="motor4" onchange="updateSliderPWM(this)">
-        <span id="text_motor4">50</span>
+        <input type="range" min="1" max="1024" value="0" class="slider" id="motor4" onchange="updateSliderPWM(this)">
+        <span id="text_motor4">0</span>
     </div>
     <div>
         <button onclick="resetFunction()">Reset</button>

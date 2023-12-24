@@ -4,6 +4,7 @@
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 #include <DebugLog.h>
+
 #include "credentials.h"
 #include "motor.h"
 
@@ -71,10 +72,16 @@ void setup()
     ledcAttachPin(MOTOR2_FW_PIN, 3);
     Motor motor2(2, 2, 3, DEFAULT_PWM);
 
-    server.on("/setpwm", HTTP_GET, [](AsyncWebServerRequest *request)
+    Motor motorArray[] = {
+        motor1,
+        motor2};
+
+    LOG_INFO("motor1: ", motor1.toString());
+    LOG_INFO("motor2: ", motor2.toString());
+
+    server.on("/setpwm", HTTP_GET, [&](AsyncWebServerRequest *request)
               {
         String pwm;
-        String mode;
         String motor;
         debugRequest(request);
         if (request->hasParam(PARAM_PWM)) {
@@ -83,11 +90,17 @@ void setup()
         if (request->hasParam(PARAM_MOTOR)) {
             motor = request->getParam(PARAM_MOTOR)->value();
         } 
-        LOG_INFO("pwm=", pwm, ", mode=", mode, ", motor=", motor);
+        motor.trim();
+        int motorIdx = motor.toInt()-1;
+        LOG_INFO("pwm=", pwm, "motorStr=[", motor, "],motor=", motorIdx);
+
+        Motor motorObj = motorArray[motorIdx];
+        LOG_INFO("motorObj: " + motorObj.toString());
+        motorObj.setCurrentPwm(pwm.toInt());
 
        request->send(200); });
 
-    server.on("/motor", HTTP_GET, [](AsyncWebServerRequest *request)
+    server.on("/motor", HTTP_GET, [&](AsyncWebServerRequest *request)
               {
         String direction;
         String motor;
@@ -98,7 +111,13 @@ void setup()
         if (request->hasParam(PARAM_MOTOR)) {
             motor = request->getParam(PARAM_MOTOR)->value();
         } 
-        LOG_INFO("direction=", direction, ", motor=", motor);
+        motor.trim();
+        int motorIdx = motor.toInt()-1;
+        LOG_INFO("direction=", direction, "motorStr=[", motor, "], motorIdx=", motorIdx);
+
+        Motor motorObj = motorArray[motorIdx];
+        LOG_INFO("motorObj: "+motorObj.toString());
+        motorObj.setDirection(Motor::stringToDirection(direction));
 
        request->send(200); });
 
