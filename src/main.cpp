@@ -62,7 +62,6 @@ void setup()
     ledcAttachPin(MOTOR1_BW_PIN, 0);
     ledcSetup(1, FREQUENCY, BIT_RESOLUTION);
     ledcAttachPin(MOTOR1_FW_PIN, 1);
-    Motor motor1(1, 0, 1, DEFAULT_PWM);
 
     pinMode(MOTOR2_BW_PIN, OUTPUT);
     pinMode(MOTOR2_FW_PIN, OUTPUT);
@@ -70,14 +69,13 @@ void setup()
     ledcAttachPin(MOTOR2_BW_PIN, 2);
     ledcSetup(3, FREQUENCY, BIT_RESOLUTION);
     ledcAttachPin(MOTOR2_FW_PIN, 3);
-    Motor motor2(2, 2, 3, DEFAULT_PWM);
 
     Motor motorArray[] = {
-        motor1,
-        motor2};
+        Motor(1, 0, 1, DEFAULT_PWM),
+        Motor(2, 2, 3, DEFAULT_PWM)};
 
-    LOG_INFO("motor1: ", motor1.toString());
-    LOG_INFO("motor2: ", motor2.toString());
+    LOG_INFO("motorArray[0]: ", motorArray[0].toString());
+    LOG_INFO("motorArray[1]: ", motorArray[1].toString());
 
     server.on("/setpwm", HTTP_GET, [&](AsyncWebServerRequest *request)
               {
