@@ -4,9 +4,12 @@
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 #include <DebugLog.h>
+#include <array>
 
 #include "credentials.h"
 #include "motor.h"
+
+#define NOF_MOTORS 2
 
 AsyncWebServer server(80);
 
@@ -47,6 +50,99 @@ void debugRequest(AsyncWebServerRequest *request)
     }
 }
 
+class RequestHander : public AsyncWebHandler
+{
+public:
+    RequestHander(std::array<Motor, NOF_MOTORS> &motorArray) : motorArray_(motorArray) {}
+    virtual ~RequestHander() {}
+
+    bool canHandle(AsyncWebServerRequest *request)
+    {
+        int args = request->args();
+        LOG_INFO("URL=", request->url());
+        for (int i = 0; i < args; i++)
+        {
+            LOG_INFO("ARG ", request->argName(i).c_str(), "=", request->arg(i).c_str());
+        }
+        if (request->url() == "/setpwm" || request->url() == "/motor")
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    void handleRequest(AsyncWebServerRequest *request)
+    {
+        if (request->url() == "/setpwm")
+        {
+            handleSetpwm(request);
+        }
+        else if (request->url() == "/motor")
+        {
+            handleMotor(request);
+        }
+        else
+        {
+            LOG_ERROR("Unknown request url: " + request->url());
+            request->send(404);
+        }
+    }
+
+private:
+    std::array<Motor, NOF_MOTORS> motorArray_;
+
+    void handleSetpwm(AsyncWebServerRequest *request)
+    {
+        String pwm;
+        String motor;
+        debugRequest(request);
+        if (request->hasParam(PARAM_PWM))
+        {
+            pwm = request->getParam(PARAM_PWM)->value();
+        }
+        if (request->hasParam(PARAM_MOTOR))
+        {
+            motor = request->getParam(PARAM_MOTOR)->value();
+        }
+        motor.trim();
+        int motorIdx = motor.toInt() - 1;
+        LOG_INFO("pwm=", pwm, "motorStr=[", motor, "],motor=", motorIdx);
+
+        Motor motorObj = motorArray_[motorIdx];
+        LOG_INFO("motorObj: " + motorObj.toString());
+        motorObj.setCurrentPwm(pwm.toInt());
+
+        request->send(200);
+    }
+
+    void handleMotor(AsyncWebServerRequest *request)
+    {
+        String direction;
+        String motor;
+        debugRequest(request);
+        if (request->hasParam(PARAM_DIRECTION))
+        {
+            direction = request->getParam(PARAM_DIRECTION)->value();
+        }
+        if (request->hasParam(PARAM_MOTOR))
+        {
+            motor = request->getParam(PARAM_MOTOR)->value();
+        }
+        motor.trim();
+        int motorIdx = motor.toInt() - 1;
+        LOG_INFO("direction=", direction, "motorStr=[", motor, "], motorIdx=", motorIdx);
+
+        Motor motorObj = motorArray_[motorIdx];
+        LOG_INFO("motorObj: " + motorObj.toString());
+        motorObj.setDirection(Motor::stringToDirection(direction));
+
+        request->send(200);
+    }
+};
+
 void setup()
 {
     SPIFFS.begin();
@@ -70,56 +166,16 @@ void setup()
     ledcSetup(3, FREQUENCY, BIT_RESOLUTION);
     ledcAttachPin(MOTOR2_FW_PIN, 3);
 
-    Motor motorArray[] = {
+    std::array<Motor, NOF_MOTORS> motorArray = {
         Motor(1, 0, 1, DEFAULT_PWM),
         Motor(2, 2, 3, DEFAULT_PWM)};
 
     LOG_INFO("motorArray[0]: ", motorArray[0].toString());
     LOG_INFO("motorArray[1]: ", motorArray[1].toString());
 
-    server.on("/setpwm", HTTP_GET, [&](AsyncWebServerRequest *request)
-              {
-        String pwm;
-        String motor;
-        debugRequest(request);
-        if (request->hasParam(PARAM_PWM)) {
-            pwm = request->getParam(PARAM_PWM)->value();
-        } 
-        if (request->hasParam(PARAM_MOTOR)) {
-            motor = request->getParam(PARAM_MOTOR)->value();
-        } 
-        motor.trim();
-        int motorIdx = motor.toInt()-1;
-        LOG_INFO("pwm=", pwm, "motorStr=[", motor, "],motor=", motorIdx);
-
-        Motor motorObj = motorArray[motorIdx];
-        LOG_INFO("motorObj: " + motorObj.toString());
-        motorObj.setCurrentPwm(pwm.toInt());
-
-       request->send(200); });
-
-    server.on("/motor", HTTP_GET, [&](AsyncWebServerRequest *request)
-              {
-        String direction;
-        String motor;
-        debugRequest(request);
-        if (request->hasParam(PARAM_DIRECTION)) {
-            direction = request->getParam(PARAM_DIRECTION)->value();
-        } 
-        if (request->hasParam(PARAM_MOTOR)) {
-            motor = request->getParam(PARAM_MOTOR)->value();
-        } 
-        motor.trim();
-        int motorIdx = motor.toInt()-1;
-        LOG_INFO("direction=", direction, "motorStr=[", motor, "], motorIdx=", motorIdx);
-
-        Motor motorObj = motorArray[motorIdx];
-        LOG_INFO("motorObj: "+motorObj.toString());
-        motorObj.setDirection(Motor::stringToDirection(direction));
-
-       request->send(200); });
-
     server.begin();
+
+    server.addHandler(new RequestHander(motorArray));
 }
 
 void loop()

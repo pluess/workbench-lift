@@ -21,7 +21,8 @@ public:
                             fwPwmChannel_(fwPwmChannel),
                             defaultPwm_(defaultPwm),
                             currentPwm_(defaultPwm),
-                            currentDirection_(Direction::Off) {}
+                            currentDirection_(Direction::Off),
+                            counter_(0) {}
 
     int const motorNr() const { return motorNr_; }
 
@@ -54,6 +55,7 @@ private:
     int bwPwmChannel_;
     int fwPwmChannel_;
     Direction currentDirection_;
+    int counter_;
 
     void drive();
 };

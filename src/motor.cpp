@@ -6,13 +6,12 @@
 String Motor::toString()
 {
     char buffer[1024];
-    void *self = this;
 
-    sprintf(buffer, "adr=%d, motorNr_=%d, currentDirection_=%s, currentPwm_=%d",
-            self,
+    sprintf(buffer, "motorNr_=%d, currentDirection_=%s, currentPwm_=%d, counter_=%d",
             motorNr_,
             directionToString(currentDirection_),
-            currentPwm_);
+            currentPwm_,
+            counter_);
 
     return buffer;
 }
@@ -38,6 +37,7 @@ void Motor::drive()
         LOG_ERROR("No currentDirection_ set.");
         break;
     }
+    counter_++;
 }
 
 String Motor::directionToString(Direction direction)
