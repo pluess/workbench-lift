@@ -11,8 +11,6 @@
 
 #define NOF_MOTORS 2
 
-AsyncWebServer server(80);
-
 const char *PARAM_PWM = "pwm";
 const char *PARAM_DIRECTION = "direction";
 const char *PARAM_MOTOR = "motor";
@@ -26,6 +24,12 @@ const int MOTOR1_BW_PIN = 15;
 const int MOTOR1_FW_PIN = 2;
 const int MOTOR2_BW_PIN = 0;
 const int MOTOR2_FW_PIN = 4;
+
+AsyncWebServer server(80);
+
+std::array<Motor, NOF_MOTORS> motorArray = {
+    Motor(1, 0, 1, DEFAULT_PWM),
+    Motor(2, 2, 3, DEFAULT_PWM)};
 
 void initWiFi()
 {
@@ -92,13 +96,12 @@ public:
     }
 
 private:
-    std::array<Motor, NOF_MOTORS> motorArray_;
+    std::array<Motor, NOF_MOTORS> &motorArray_;
 
     void handleSetpwm(AsyncWebServerRequest *request)
     {
         String pwm;
         String motor;
-        debugRequest(request);
         if (request->hasParam(PARAM_PWM))
         {
             pwm = request->getParam(PARAM_PWM)->value();
@@ -107,13 +110,10 @@ private:
         {
             motor = request->getParam(PARAM_MOTOR)->value();
         }
-        motor.trim();
         int motorIdx = motor.toInt() - 1;
         LOG_INFO("pwm=", pwm, "motorStr=[", motor, "],motor=", motorIdx);
-
-        Motor motorObj = motorArray_[motorIdx];
-        LOG_INFO("motorObj: " + motorObj.toString());
-        motorObj.setCurrentPwm(pwm.toInt());
+        LOG_INFO("motorObj: " + motorArray[motorIdx].toString());
+        motorArray[motorIdx].setCurrentPwm(pwm.toInt());
 
         request->send(200);
     }
@@ -122,7 +122,6 @@ private:
     {
         String direction;
         String motor;
-        debugRequest(request);
         if (request->hasParam(PARAM_DIRECTION))
         {
             direction = request->getParam(PARAM_DIRECTION)->value();
@@ -131,13 +130,10 @@ private:
         {
             motor = request->getParam(PARAM_MOTOR)->value();
         }
-        motor.trim();
         int motorIdx = motor.toInt() - 1;
         LOG_INFO("direction=", direction, "motorStr=[", motor, "], motorIdx=", motorIdx);
-
-        Motor motorObj = motorArray_[motorIdx];
-        LOG_INFO("motorObj: " + motorObj.toString());
-        motorObj.setDirection(Motor::stringToDirection(direction));
+        LOG_INFO("motorObj: " + motorArray[motorIdx].toString());
+        motorArray[motorIdx].setDirection(Motor::stringToDirection(direction));
 
         request->send(200);
     }
@@ -165,10 +161,6 @@ void setup()
     ledcAttachPin(MOTOR2_BW_PIN, 2);
     ledcSetup(3, FREQUENCY, BIT_RESOLUTION);
     ledcAttachPin(MOTOR2_FW_PIN, 3);
-
-    std::array<Motor, NOF_MOTORS> motorArray = {
-        Motor(1, 0, 1, DEFAULT_PWM),
-        Motor(2, 2, 3, DEFAULT_PWM)};
 
     LOG_INFO("motorArray[0]: ", motorArray[0].toString());
     LOG_INFO("motorArray[1]: ", motorArray[1].toString());
