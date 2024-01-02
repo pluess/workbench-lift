@@ -8,9 +8,9 @@ function updateAllSlider() {
 }
 
 function updateSliderPWM(element) {
-    var sliderValue = $(element).val();
-    $("#text_" + element.id).html(sliderValue);
-    var motor = parseInt(element.id.substring(5, 6));
+    var sliderValue = $(this).val();
+    $("#text_" + $(this).prop("id")).html(sliderValue);
+    var motor = parseInt($(this).prop("id").substring(5, 6));
     console.log(`updateSliderPWM: motor=${motor}, sliderValue=${sliderValue}`);
     $.ajax(
         {
@@ -30,6 +30,12 @@ function resetFunction() {
 }
 
 $(document).ready(function () {
+    $('input[type=range][id=allpwm]').on('change', updateAllSlider);
+    $('input[type=range][id=motor1]').on('change', updateSliderPWM);
+    $('input[type=range][id=motor2]').on('change', updateSliderPWM);
+    $('input[type=range][id=motor3]').on('change', updateSliderPWM);
+    $('input[type=range][id=motor4]').on('change', updateSliderPWM);
+
     $('input[type=radio][name=motorAll]').on('change', switchAllMotor);
     $('input[type=radio][name=motor1]').on('change', switchMotor);
     $('input[type=radio][name=motor2]').on('change', switchMotor);
@@ -38,7 +44,8 @@ $(document).ready(function () {
 });
 
 function switchAllMotor() {
-    var mode = $(this).val();
+    var mode = $(this).prop("id");
+    mode = mode.substring(0, mode.indexOf("All"));
     for (var i = 1; i <= 4; i++) {
         $("#" + mode + i).prop("checked", true).change();
     }
