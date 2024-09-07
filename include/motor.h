@@ -19,14 +19,11 @@ public:
           int defaultPwm) : motorNr_(motorNr),
                             bwPwmChannel_(bwPwmChannel),
                             fwPwmChannel_(fwPwmChannel),
-                            defaultPwm_(defaultPwm),
                             currentPwm_(defaultPwm),
                             currentDirection_(Direction::Off),
                             counter_(0) {}
 
     int const motorNr() const { return motorNr_; }
-
-    int defaultPwm() const { return defaultPwm_; }
 
     int currentPwm() const { return currentPwm_; }
     void setCurrentPwm(int currentPwm)
@@ -34,8 +31,6 @@ public:
         currentPwm_ = currentPwm;
         drive();
     }
-
-    void resetPwn() { currentPwm_ = defaultPwm_; }
 
     void setDirection(const Direction direction)
     {

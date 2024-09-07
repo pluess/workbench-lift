@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <WiFi.h>
 #include <SPIFFS.h>
+#include <Preferences.h>
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 #include <DebugLog.h>
@@ -18,7 +19,7 @@ const char *PARAM_MOTOR = "motor";
 const int FREQUENCY = 5000;
 const int BIT_RESOLUTION = 10;
 
-const int DEFAULT_PWM = 0;
+const int DEFAULT_PWM = 700;
 
 // GPIO 0 and 2 should not be used
 // see https://docs.espressif.com/projects/esptool/en/latest/esp32/advanced-topics/boot-mode-selection.html#manual-bootloader
@@ -32,6 +33,8 @@ const int MOTOR4_BW_PIN = 19;
 const int MOTOR4_FW_PIN = 21;
 
 AsyncWebServer server(80);
+
+Preferences preferences;
 
 std::array<Motor, NOF_MOTORS> motorArray = {
     Motor(1, 0, 1, DEFAULT_PWM),
@@ -76,7 +79,7 @@ public:
         {
             LOG_INFO("ARG ", request->argName(i).c_str(), "=", request->arg(i).c_str());
         }
-        if (request->url() == "/setpwm" || request->url() == "/motor")
+        if (request->url() == "/setpwm" || request->url() == "/getpwm" || request->url() == "/motor")
         {
             return true;
         }
@@ -91,6 +94,10 @@ public:
         if (request->url() == "/setpwm")
         {
             handleSetpwm(request);
+        }
+        else if (request->url() == "/getpwm")
+        {
+            handleGetpwm(request);
         }
         else if (request->url() == "/motor")
         {
@@ -122,8 +129,22 @@ private:
         LOG_INFO("pwm=", pwm, "motorStr=[", motor, "],motor=", motorIdx);
         LOG_INFO("motorObj: " + motorArray[motorIdx].toString());
         motorArray[motorIdx].setCurrentPwm(pwm.toInt());
+        preferences.putInt(("motor" + std::to_string(motorIdx)).c_str(), pwm.toInt());
 
         request->send(200);
+    }
+
+    void handleGetpwm(AsyncWebServerRequest *request)
+    {
+
+        char json[200];
+        sprintf(json, "{ \"motor0\": %d, \"motor1\": %d, \"motor2\": %d, \"motor3\": %d}",
+                motorArray[0].currentPwm(),
+                motorArray[1].currentPwm(),
+                motorArray[2].currentPwm(),
+                motorArray[3].currentPwm());
+        LOG_INFO(json);
+        request->send(200, "application/json", json);
     }
 
     void handleMotor(AsyncWebServerRequest *request)
@@ -152,6 +173,12 @@ void setup()
     SPIFFS.begin();
     Serial.begin(9600);
     initWiFi();
+
+    preferences.begin("pwm", false);
+    motorArray[0].setCurrentPwm(preferences.getInt("motor0", DEFAULT_PWM));
+    motorArray[1].setCurrentPwm(preferences.getInt("motor1", DEFAULT_PWM));
+    motorArray[2].setCurrentPwm(preferences.getInt("motor2", DEFAULT_PWM));
+    motorArray[3].setCurrentPwm(preferences.getInt("motor3", DEFAULT_PWM));
 
     server.serveStatic("/index", SPIFFS, "/index.html");
     server.serveStatic("/index.js", SPIFFS, "/index.js");
@@ -188,8 +215,6 @@ void setup()
     {
         LOG_INFO("motorArray[", String(i), "]: ", motorArray[i].toString());
     }
-
-    // LOG_INFO("motorArray[1]: ", motorArray[1].toString());
 
     server.begin();
 

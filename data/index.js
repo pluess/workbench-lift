@@ -1,6 +1,6 @@
 function updateAllSlider() {
     var sliderValue = $("#allpwm").val();
-    $("text_allpwm").html(sliderValue);
+    $("#text_allpwm").html(sliderValue);
     console.log(`updateAllSlider: sliderValue=${sliderValue}`);
     for (var i = 1; i <= 4; i++) {
         $("#motor" + i).val(sliderValue).trigger("change");
@@ -25,23 +25,9 @@ function updateSliderPWM(element) {
 }
 
 function resetFunction() {
-    $("#allpwm").val(0).trigger("change");
+    $("#allpwm").val(700).trigger("change");
     $("#offAll").prop("checked", true).change();
 }
-
-$(document).ready(function () {
-    $('input[type=range][id=allpwm]').on('change', updateAllSlider);
-    $('input[type=range][id=motor1]').on('change', updateSliderPWM);
-    $('input[type=range][id=motor2]').on('change', updateSliderPWM);
-    $('input[type=range][id=motor3]').on('change', updateSliderPWM);
-    $('input[type=range][id=motor4]').on('change', updateSliderPWM);
-
-    $('input[type=radio][name=motorAll]').on('change', switchAllMotor);
-    $('input[type=radio][name=motor1]').on('change', switchMotor);
-    $('input[type=radio][name=motor2]').on('change', switchMotor);
-    $('input[type=radio][name=motor3]').on('change', switchMotor);
-    $('input[type=radio][name=motor4]').on('change', switchMotor);
-});
 
 function switchAllMotor() {
     var mode = $(this).prop("id");
@@ -72,3 +58,48 @@ function switchMotor(event) {
         }
     )
 }
+
+function initPwm(data) {
+    console.log(`initPwm: data=${JSON.stringify(data)}`);
+    $("#motor1").val(data.motor0);
+    $("#motor2").val(data.motor1);
+    $("#motor3").val(data.motor2);
+    $("#motor4").val(data.motor3);
+    $("#text_motor1").html(data.motor0);
+    $("#text_motor2").html(data.motor1);
+    $("#text_motor3").html(data.motor2);
+    $("#text_motor4").html(data.motor3);
+
+    if (data.motor0 == data.motor1 && data.motor0 == data.motor2 && data.motor0 == data.motor3) {
+        $("#allpwm").val(data.motor0);
+        $("#text_allpwm").html(data.motor0);
+    }
+}
+
+function initChangeHanlder() {
+    $('input[type=range][id=allpwm]').on('change', updateAllSlider);
+    $('input[type=range][id=motor1]').on('change', updateSliderPWM);
+    $('input[type=range][id=motor2]').on('change', updateSliderPWM);
+    $('input[type=range][id=motor3]').on('change', updateSliderPWM);
+    $('input[type=range][id=motor4]').on('change', updateSliderPWM);
+
+    $('input[type=radio][name=motorAll]').on('change', switchAllMotor);
+    $('input[type=radio][name=motor1]').on('change', switchMotor);
+    $('input[type=radio][name=motor2]').on('change', switchMotor);
+    $('input[type=radio][name=motor3]').on('change', switchMotor);
+    $('input[type=radio][name=motor4]').on('change', switchMotor);
+}
+
+$(document).ready(function () {
+    $.ajax({
+        url: "/getpwm",
+        type: 'GET',
+        dataType: 'json',
+        success: initPwm,
+        complete: initChangeHanlder,
+        error: function (query, status) {
+            console.log(`error: query=${JSON.stringify(query, null, 4)}`);
+            console.log(`error: status=${status}`);
+        }
+    });
+});
