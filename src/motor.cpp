@@ -1,3 +1,5 @@
+#define DEBUGLOG_DEFAULT_LOG_LEVEL_INFO
+
 #include <Arduino.h>
 #include <DebugLog.h>
 

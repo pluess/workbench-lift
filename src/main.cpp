@@ -1,3 +1,5 @@
+#define DEBUGLOG_DEFAULT_LOG_LEVEL_DEBUG
+
 #include <Arduino.h>
 #include <WiFi.h>
 #include <SPIFFS.h>
@@ -9,8 +11,10 @@
 
 #include "credentials.h"
 #include "motor.h"
+#include "touch.h"
 
 #define NOF_MOTORS 4
+#define NOF_TOUCH 2
 
 const char *PARAM_PWM = "pwm";
 const char *PARAM_DIRECTION = "direction";
@@ -32,6 +36,10 @@ const int MOTOR3_FW_PIN = 18;
 const int MOTOR4_BW_PIN = 19;
 const int MOTOR4_FW_PIN = 21;
 
+const int TOUCH_UP_PIN = 13;
+const int TOUCH_DOWN_PIN = 14;
+const touch_value_t TOUCH_THRESHOLD = 45;
+
 AsyncWebServer server(80);
 
 Preferences preferences;
@@ -41,6 +49,10 @@ std::array<Motor, NOF_MOTORS> motorArray = {
     Motor(2, 2, 3, DEFAULT_PWM),
     Motor(3, 4, 5, DEFAULT_PWM),
     Motor(4, 6, 7, DEFAULT_PWM)};
+
+std::array<Touch, NOF_TOUCH> touchArray = {
+    Touch(0, TOUCH_UP_PIN, TOUCH_THRESHOLD),
+    Touch(1, TOUCH_DOWN_PIN, TOUCH_THRESHOLD)};
 
 void initWiFi()
 {
@@ -211,9 +223,18 @@ void setup()
     ledcSetup(7, FREQUENCY, BIT_RESOLUTION);
     ledcAttachPin(MOTOR4_FW_PIN, 7);
 
+    for (int i = 0; i < touchArray.size(); i++)
+    {
+        touchArray[i].setup();
+    }
+
     for (int i = 0; i < motorArray.size(); i++)
     {
         LOG_INFO("motorArray[", String(i), "]: ", motorArray[i].toString());
+    }
+    for (int i = 0; i < touchArray.size(); i++)
+    {
+        LOG_INFO("touchArray[", String(i), "]: ", touchArray[i].toString());
     }
 
     server.begin();
@@ -221,8 +242,20 @@ void setup()
     server.addHandler(new RequestHander(motorArray));
 }
 
+void touched(int pinNr)
+{
+    LOG_INFO("touched by ", pinNr);
+}
+
+void untouched(int pinNr)
+{
+    LOG_INFO("untouched by ", pinNr);
+}
+
 void loop()
 {
-    Serial.print('=');
-    delay(2000);
+    for (int i = 0; i < touchArray.size(); i++)
+    {
+        touchArray[i].detectTouch(touched, untouched);
+    }
 }
