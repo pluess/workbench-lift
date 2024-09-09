@@ -38,7 +38,7 @@ const int MOTOR4_FW_PIN = 21;
 
 const int TOUCH_UP_PIN = 13;
 const int TOUCH_DOWN_PIN = 14;
-const touch_value_t TOUCH_THRESHOLD = 45;
+const touch_value_t TOUCH_THRESHOLD = 14;
 
 AsyncWebServer server(80);
 
@@ -180,6 +180,33 @@ private:
     }
 };
 
+Direction getDirectionFromPin(int pinNr)
+{
+    switch (pinNr)
+    {
+    case TOUCH_UP_PIN:
+        return Direction::Forward;
+    case TOUCH_DOWN_PIN:
+        return Direction::Backward;
+    default:
+        return Direction::Off;
+    }
+}
+
+void touched(int pinNr)
+{
+    // LOG_INFO("touched pin:  ", pinNr);
+    for (int i = 0; i < motorArray.size(); i++)
+    {
+        motorArray[i].setDirection(getDirectionFromPin(pinNr));
+    }
+}
+
+void untouched(int pinNr)
+{
+    // LOG_INFO("untouched pin:  ", pinNr);
+}
+
 void setup()
 {
     SPIFFS.begin();
@@ -240,16 +267,6 @@ void setup()
     server.begin();
 
     server.addHandler(new RequestHander(motorArray));
-}
-
-void touched(int pinNr)
-{
-    LOG_INFO("touched by ", pinNr);
-}
-
-void untouched(int pinNr)
-{
-    LOG_INFO("untouched by ", pinNr);
 }
 
 void loop()

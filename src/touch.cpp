@@ -31,13 +31,13 @@ void Touch::detectTouch(void (*touched)(int), void (*untouched)(int))
     if (currentTouch < threshold_ && touchedState_ == false)
     {
         touchedState_ = true;
-        touched(touchPin_);
         LOG_INFO("currentTouch=", currentTouch, ", ", this->toString());
+        touched(touchPin_);
     }
     else if (currentTouch >= threshold_ && touchedState_ == true)
     {
         touchedState_ = false;
-        untouched(touchPin_);
         LOG_INFO("currentTouch=", currentTouch, ", ", this->toString());
+        untouched(touchPin_);
     }
 }
