@@ -37,8 +37,9 @@ const int MOTOR4_BW_PIN = 19;
 const int MOTOR4_FW_PIN = 21;
 
 const int BUTTON_UP_PIN = 27;
-const int BUTTON_DOWN_PIN = 25;
-const touch_value_t TOUCH_THRESHOLD = 14;
+const int BUTTON_DOWN_PIN = 26;
+
+const int SWITCH_WIFI_PIN = 25;
 
 AsyncWebServer server(80);
 
@@ -211,16 +212,28 @@ void setup()
 {
     SPIFFS.begin();
     Serial.begin(9600);
-    initWiFi();
+
+    pinMode(SWITCH_WIFI_PIN, INPUT_PULLUP);
+    int wifiRead = digitalRead(SWITCH_WIFI_PIN);
+    if (!wifiRead)
+    {
+        initWiFi();
+        server.serveStatic("/index", SPIFFS, "/index.html");
+        server.serveStatic("/index.js", SPIFFS, "/index.js");
+        server.begin();
+
+        server.addHandler(new RequestHander(motorArray));
+    }
+    else
+    {
+        LOG_INFO("Wifi siwtched off");
+    }
 
     preferences.begin("pwm", false);
     motorArray[0].setCurrentPwm(preferences.getInt("motor0", DEFAULT_PWM));
     motorArray[1].setCurrentPwm(preferences.getInt("motor1", DEFAULT_PWM));
     motorArray[2].setCurrentPwm(preferences.getInt("motor2", DEFAULT_PWM));
     motorArray[3].setCurrentPwm(preferences.getInt("motor3", DEFAULT_PWM));
-
-    server.serveStatic("/index", SPIFFS, "/index.html");
-    server.serveStatic("/index.js", SPIFFS, "/index.js");
 
     pinMode(MOTOR1_BW_PIN, OUTPUT);
     pinMode(MOTOR1_FW_PIN, OUTPUT);
@@ -263,10 +276,6 @@ void setup()
     {
         LOG_INFO("buttonArray[", String(i), "]: ", buttonArray[i].toString());
     }
-
-    server.begin();
-
-    server.addHandler(new RequestHander(motorArray));
 }
 
 void loop()
