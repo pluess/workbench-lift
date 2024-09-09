@@ -11,7 +11,7 @@
 
 #include "credentials.h"
 #include "motor.h"
-#include "touch.h"
+#include "button.h"
 
 #define NOF_MOTORS 4
 #define NOF_TOUCH 2
@@ -36,8 +36,8 @@ const int MOTOR3_FW_PIN = 18;
 const int MOTOR4_BW_PIN = 19;
 const int MOTOR4_FW_PIN = 21;
 
-const int TOUCH_UP_PIN = 13;
-const int TOUCH_DOWN_PIN = 14;
+const int BUTTON_UP_PIN = 27;
+const int BUTTON_DOWN_PIN = 25;
 const touch_value_t TOUCH_THRESHOLD = 14;
 
 AsyncWebServer server(80);
@@ -50,9 +50,9 @@ std::array<Motor, NOF_MOTORS> motorArray = {
     Motor(3, 4, 5, DEFAULT_PWM),
     Motor(4, 6, 7, DEFAULT_PWM)};
 
-std::array<Touch, NOF_TOUCH> touchArray = {
-    Touch(0, TOUCH_UP_PIN, TOUCH_THRESHOLD),
-    Touch(1, TOUCH_DOWN_PIN, TOUCH_THRESHOLD)};
+std::array<Button, NOF_TOUCH> buttonArray = {
+    Button(0, BUTTON_UP_PIN),
+    Button(1, BUTTON_DOWN_PIN)};
 
 void initWiFi()
 {
@@ -184,16 +184,16 @@ Direction getDirectionFromPin(int pinNr)
 {
     switch (pinNr)
     {
-    case TOUCH_UP_PIN:
+    case BUTTON_UP_PIN:
         return Direction::Forward;
-    case TOUCH_DOWN_PIN:
+    case BUTTON_DOWN_PIN:
         return Direction::Backward;
     default:
         return Direction::Off;
     }
 }
 
-void touched(int pinNr)
+void pushed(int pinNr)
 {
     // LOG_INFO("touched pin:  ", pinNr);
     for (int i = 0; i < motorArray.size(); i++)
@@ -202,7 +202,7 @@ void touched(int pinNr)
     }
 }
 
-void untouched(int pinNr)
+void released(int pinNr)
 {
     // LOG_INFO("untouched pin:  ", pinNr);
 }
@@ -250,18 +250,18 @@ void setup()
     ledcSetup(7, FREQUENCY, BIT_RESOLUTION);
     ledcAttachPin(MOTOR4_FW_PIN, 7);
 
-    for (int i = 0; i < touchArray.size(); i++)
+    for (int i = 0; i < buttonArray.size(); i++)
     {
-        touchArray[i].setup();
+        buttonArray[i].setup();
     }
 
     for (int i = 0; i < motorArray.size(); i++)
     {
         LOG_INFO("motorArray[", String(i), "]: ", motorArray[i].toString());
     }
-    for (int i = 0; i < touchArray.size(); i++)
+    for (int i = 0; i < buttonArray.size(); i++)
     {
-        LOG_INFO("touchArray[", String(i), "]: ", touchArray[i].toString());
+        LOG_INFO("buttonArray[", String(i), "]: ", buttonArray[i].toString());
     }
 
     server.begin();
@@ -271,8 +271,8 @@ void setup()
 
 void loop()
 {
-    for (int i = 0; i < touchArray.size(); i++)
+    for (int i = 0; i < buttonArray.size(); i++)
     {
-        touchArray[i].detectTouch(touched, untouched);
+        buttonArray[i].check(pushed, released);
     }
 }
