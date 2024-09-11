@@ -5,7 +5,7 @@
 
 #include "button.h"
 
-const unsigned long DEBOUNCE_MILIS = 200;
+const unsigned long DEBOUNCE_MILIS = 100;
 
 String Button::toString()
 {
@@ -27,6 +27,7 @@ void Button::setup()
 
 void Button::check(void (*pushed)(int), void (*released)(int))
 {
+    unsigned long now = millis();
     int currentRead = digitalRead(buttonPin_);
 
     if (currentRead == 0 && buttonState_ == false)
@@ -34,7 +35,7 @@ void Button::check(void (*pushed)(int), void (*released)(int))
         if (!debounce())
         {
             buttonState_ = true;
-            LOG_INFO("currentRead=", currentRead, ", ", this->toString());
+            LOG_INFO("now=", now, "currentRead=", currentRead, ", ", this->toString());
             pushed(buttonPin_);
         }
     }
@@ -43,7 +44,7 @@ void Button::check(void (*pushed)(int), void (*released)(int))
         if (!debounce())
         {
             buttonState_ = false;
-            LOG_INFO("currentRead=", currentRead, ", ", this->toString());
+            LOG_INFO("now=", now, "currentRead=", currentRead, ", ", this->toString());
             released(buttonPin_);
         }
     }
@@ -52,9 +53,9 @@ void Button::check(void (*pushed)(int), void (*released)(int))
 boolean Button::debounce()
 {
     unsigned long now = millis();
-    LOG_INFO("millis=", now);
     if (lastReadTime_ + DEBOUNCE_MILIS > now)
     {
+        LOG_INFO("millis=", now);
         return true;
     }
     else

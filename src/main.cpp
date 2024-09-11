@@ -213,9 +213,10 @@ void setup()
     SPIFFS.begin();
     Serial.begin(9600);
 
-    pinMode(SWITCH_WIFI_PIN, INPUT_PULLUP);
-    int wifiRead = digitalRead(SWITCH_WIFI_PIN);
-    if (!wifiRead)
+    // pinMode(SWITCH_WIFI_PIN, INPUT_PULLUP);
+    // int wifiRead = digitalRead(SWITCH_WIFI_PIN);
+    // if (!wifiRead)
+    if (true)
     {
         initWiFi();
         server.serveStatic("/index", SPIFFS, "/index.html");
