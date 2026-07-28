@@ -220,6 +220,8 @@ void setup()
     {
         initWiFi();
         server.serveStatic("/index", SPIFFS, "/index.html");
+        server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
+                  { request->redirect("/index"); });
         server.serveStatic("/index.js", SPIFFS, "/index.js");
         server.begin();
 
